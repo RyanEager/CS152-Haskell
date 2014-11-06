@@ -1,0 +1,80 @@
+<html><head><title>Assignment #3, CS 152, Spring 2014</title></head><body>
+<center>
+<h2>Assignment #3</h2>
+<h3>CS 152<br>due March 20, 2014 <br>
+120 points</h3>
+</center>
+<ol>
+
+   For this assignment you are to define the functions below in Haskell.  Note that for functions that are to robustly handle illegal input, we use our course's convention that return types are to be of the form <code>Either String a</code> if there is to be an error message and <code>Maybe a</code> if there is not.  In the first case, the <code>String</code> value (that is, the argument to the <code>Left</code> constructor) represents the error message.<p>
+
+&nbsp;<p>
+
+<li> (20 points)  
+   <ol>
+   <li> Define a function <code>quadratic1</code> that takes the three numeric coefficients of a quadratic polynomial (leading coefficient first) and returns the larger solution of the corresponding quadratic equation if the first coefficient is nonzero and the discriminant is nonnegative.  You needn't worry about error handling.  So for example <code>quadratic1 1 (-5) 6</code> should return <code>3.0</code> (since 3 is larger than 2) and 
+<code>quadratic1 1 0 1</code> will result in an error.
+
+   <li> Define a function <code>quadratic2</code> that takes the three numeric coefficients of a quadratic polynomial (leading coefficient first) and returns the pair of solutions (larger solution first) of the corresponding quadratic equation if the first coefficient is nonzero and the discriminant is nonnegative.  You needn't worry about error handling.  So for example <code>quadratic2 1 (-5) 6</code> should return <code>(3.0, 2.0)</code>  and <code>quadratic2 1 0 1</code> will result in an error.
+
+   <li>  Define a function <code>quadratic</code> that takes the three numeric coefficients of a quadratic polynomial (leading coefficient first) and returns the pair of solutions (larger solution first) of the corresponding quadratic equation if the first coefficient is nonzero and the discriminant is nonnegative.  Otherwise the function is to return <code>Nothing</code>.  You needn't worry about error handling.  So for example <code>quadratic 1 (-5) 6</code> should return <code>Just (3.0, 2.0)</code> and <code>quadratic 1 0 1</code> should return <code>Nothing</code>.
+   </ol><p>
+
+<li> (6 points)  Define a function <code>startsWithCapital</code> of type <code>String -> Bool</code> that returns true if and only if the input string begins with a capital letter.  It should return <code>False</code> when given the empty string.<p>
+
+<li> (8 points)  Define a function <code>flipall</code> of type <code>[(Integer, Integer)] -> [(Integer, Integer)]</code> that returns the list obtained by swapping the first and second components of each pair in the input list.<p>
+
+<li> (8 points)  Define a function <code>size</code> of type <code>OrderedTree -> Int</code> that finds and returns the number of nodes in an ordered tree.<p>
+
+<li> (16 points)  
+   <ol>  
+   <li>  Define a function <code>combinedLengths</code> of type <code>[[a]] -> Int</code> that returns the combined lengths of all the lists that are members of its input list.  So for example, <code>(combinedLengths [[1], [2, 3], [4,5,6]])</code> should return <code>6</code>.  Your function should not use <code>map</code>, <code>concat</code>, or any of the "fold" functions.
+   <li>  Define a function <code>combinedLengths2</code> of type <code>[[a]] -> Int</code> that behaves like <code>combinedLengths</code>.  This function's definition is to use <code>map</code> or a "fold" function or both.  It is not to use <code>concat</code>.
+   </ol><p>
+
+<li> (24 points)  
+   <ol>  
+   <li>  Define a function <code>stripAnyCapitals</code> of type <code>String -> String</code> that returns the string resulting from removing capital letters from the beginning of the string until another character is found, or no characters remain .  So for example, <code>(stripAnyCapitals "HELLO!")</code> should return <code>"!"</code>.
+   <li>  Define a function <code>stripCapitals</code> of type <code>String -> Either String String</code> that returns the result of removing one or more capital letters from the beginning of its input string.  If the string does not begin with a capital letter, an error message should be returned according to the convention described above.  So for example, <code>stripCapitals "HELLO!"</code> should return <code>Right "!"</code>, but <code>stripCapitals "hello"</code> should return an error message like <code>Left "initial letter isn't upper case"</code>.
+   <li>  Define a function <code>isLegalIdentifier</code> of type <code>String -> Bool</code> that returns <code>true</code> if and only if its argument consists of one or more capitals followed by a single digit.  So for example, <code>isLegalIdentifier "ABC3"</code> should return <code>true</code>, but <code>isLegalIdentifier "ABC3qr"</code> and <code>isLegalIdentifier "ABC"</code> should return <code>false</code>.  For full credit, your function should call the <code>stripCapitals</code> function and use its value.<p>
+   </ol><p>
+
+<li> (8 points)  Define a function <code>stripMatchingCharacters</code> of type <code>(Char -> Bool) -> String -> String</code> that returns the string resulting from removing characters from the beginning of the string that satisfy the given predicate until a character is found that does not satisfy it, or no characters remain.  So for example <code>(stripMatchingCharacters isUpper "ABC3qr")</code> should return <code>"3qr"</code>, while <code>(stripMatchingCharacters isLower "ABC3qr")</code> should return <code>"ABC3qr"</code>.<p>
+
+<li> (14 points)  
+<ol>
+<li>  Define a data type <code>Point</code> with two components that represent the x and y coordinates of a point in 2-dimensional space as numbers of type <code>Double</code>.  Your type should accept the default <code>==</code> and <code>/=</code> functions from the <code>Eq</code> typeclass, but should define its own <code>show</code> function that shows a point in the usual way -- by putting the x and y coordinates in parentheses, separated by a comma (and no spaces).
+<li>  Define a function <code>distance</code> of type <code>Point -> Point -> Double</code> that computes and returns the distance between two points.
+</ol><p>
+
+<li> (8 points) Define a function <code>applyAll</code> of type <code>[[a] -> [a]] -> [a] -> [a]</code> that successively applies the functions in the list of functions (from left to right) to the list of type <code>[a]</code>.  So for example <code>(applyAll [tail, tail, tail, tail] [1,2,3,4,5])</code> should return <code>[5]</code> and <code> (applyAll [(map (* 2)), (map (+ 1))] [1,2,3,4,5])</code> should return <code>[3,5,7,9,11]</code>.<p> 
+
+<li> (8 points) The function defined below will correctly remove the first occurrence of <code>x</code> from the list <code>ls</code>.  However it is not tail recursive.  Redefine the function so that it has the same signature, but is nonrecursive and calls a tail recursive helper. You may assume that the use of the <code>reverse</code> function is not a violation of tail recursion.
+<pre>
+    removeFirstOccurrence x ls 
+      | null ls = []   
+      | x == head ls = tail ls
+      | otherwise = (head ls):(removeFirstOccurrence x (tail ls))
+</pre><p>
+
+
+
+
+</ol><p>
+
+Except for part 1, you should give the signature of each function that you define.<p>
+
+You are to add your definitions to the file <code>a3.hs</code>, before the definition of the <code>test1</code> function.  This file is available from the class web site.  You are to
+test your definitions by calling the <code>main</code> function of this file.  You may copy the call to that function and the results that
+it prints to a separate output file, as long as you do not edit it at all.</p><p>
+
+You are to submit through Canvas
+<ol>
+<li>  a soft copy version of the file <code>a3.hs</code>, with your definitions added.
+<li>  a soft copy version of the results of testing (with the <code>main</code> function)
+</ol>
+
+</p><p>
+
+
+</p></body></html>

@@ -1,0 +1,342 @@
+import Char
+
+--Part 1
+quadratic1 :: (Floating a, Ord a) => a -> a -> a -> a
+quadratic1 a b c = max x1 x2
+	where
+		x1 = (-b+sqrt(b^2 -(4*a*c)))/(2*a)
+		x2 = (-b-sqrt(b^2 -(4*a*c)))/(2*a)
+
+
+quadratic2 :: (Floating a, Ord a) => a -> a -> a -> (a,a)
+quadratic2 a b c  = (max x1 x2 ,min x1 x2)
+	where
+		x1 = (-b+sqrt(b^2 -(4*a*c)))/(2*a)
+		x2 = (-b-sqrt(b^2 -(4*a*c)))/(2*a)
+
+quadratic :: (Ord a, Floating a) => a -> a -> a -> Maybe [Char]
+quadratic a b c = 
+	if a > 0 && (b^2 - (4 * a * c)) > -1
+		then Just (show (quadratic2 a b c))
+		else Nothing
+
+
+-- Part 2
+startsWithCapital :: String -> Bool
+startsWithCapital input = 
+		if ((length input) > 1) && (isUpper (head input))
+			then True
+			else False
+
+
+-- Part 3
+flipall :: [(Integer, Integer)] -> [(Integer, Integer)]
+flipall x = map swap x
+
+
+-- Part 4
+size :: OrderedTree ->  Int
+size tree = length(words(show tree))
+
+
+-- Part 5
+combinedLengths :: [[a]] -> Int
+combinedLengths [] = 0
+combinedLengths a = length (head a) + combinedLengths (tail a)
+
+combinedLengths2 :: [[a]] ->Int
+combinedLengths2 a = sum(map length a)
+
+
+-- Part6
+stripAnyCapitals :: String -> String
+stripAnyCapitals str = dropWhile isUpper str
+
+stripCapitals :: String -> Either String String
+stripCapitals [] = Left  "initial letter isn't upper case"
+stripCapitals str = 
+  process(isUpper (head str))
+  where
+    process False = 
+        Left  "initial letter isn't upper case"
+    process True =
+        Right (stripAnyCapitals(str))
+
+isLegalIdentifier :: String -> Bool
+isLegalIdentifier str =
+  process (stripCapitals str)
+  where
+    process (Left errorMSg) = False
+    process (Right output) = (((length output) == 1) && (isDigit (head output)))
+
+  
+-- Part 7
+stripMatchingCharacters :: (Char -> Bool) -> String -> String
+stripMatchingCharacters b str = dropWhile b str
+
+
+-- Part 8
+data Point =  Point {x, y :: Double}
+  deriving (Eq)
+
+instance Show Point where
+  show (Point x y) =  "(" ++ show x ++ "," ++ show y ++ ")"
+
+pointX:: Point -> Double
+pointX (Point x _) = x
+
+pointY:: Point -> Double
+pointY (Point _ y) = y
+
+distance :: Point -> Point -> Double
+distance p1 p2 = sqrt(((pointX p2) - (pointX p1))^2 + ((pointY p2) - (pointY p1))^2)
+
+
+-- Part 9
+applyAll  :: [[a] -> [a]] -> [a] -> [a]
+applyAll function list = reverseFunctions (reverse function) list
+
+reverseFunctions [] list =  list
+reverseFunctions function list = reverseFunctions (tail function) ((head function) list)
+
+
+-- Part 10
+removeFirstOccurrence x ls = tailHelper x ls []
+
+tailHelper :: Eq a => a -> [a] -> [a] -> [a]
+tailHelper x ls out
+  | null ls = out
+  | x == head ls = (out ++ (tail ls))
+  | otherwise = (tailHelper x (tail ls) (out ++ [(head ls)]))
+
+
+
+------------------------------------------------------
+------ definitions of and for the OrderedTree type ---
+------------------------------------------------------
+
+
+-- ordered trees may be empty, or consist of an integer root
+--   and a list of children
+-- children should not be of the Nil subtype
+-- the type supports default equality testing
+
+data OrderedTree = Nil | Node Integer [ OrderedTree ]
+                  deriving (Eq)
+
+
+-- a simple-minded "show" function for ordered Trees 
+--   (does a preorder traversal)
+
+instance Show OrderedTree where
+  show Nil = ""
+  show (Node value list) = (show value) ++ " " ++ (concat (map show list))
+
+
+
+-- Swap the components of a pair.
+-- Swap wasn't defined in my Data.Tuple so I redefined it here
+swap  :: (a,b) -> (b,a)
+swap (a,b) = (b,a)
+
+
+
+
+
+
+--test1 :: [(Floating, Floating)]
+test1a =   
+   [ 
+     (quadratic1 1 (-3) 2),
+     (quadratic1 1  3 2),
+     (quadratic1 1 (-1) (-1)),
+     (quadratic1 6 (-5) 1)
+   ]
+
+test1b =   
+   [ 
+     (quadratic2 1 (-3) 2),
+     (quadratic2 1  3 2),
+     (quadratic2 1 (-1) (-1)),
+     (quadratic2 6 (-5) 1)
+   ]
+
+test1c =   
+   [ 
+     (quadratic 1 (-3) 2),
+     (quadratic 1  3 2),
+     (quadratic 1 (-1) (-1)),
+     (quadratic 6 (-5) 1),
+     (quadratic 0 1 (-3)),
+     (quadratic 1 1 1)
+   ]
+
+test2 = 
+   [
+     (startsWithCapital ""),
+     (startsWithCapital "CS 152"),
+     (startsWithCapital "152"),
+     (startsWithCapital "hello!")
+   ]
+
+test3 = 
+   [ (flipall []),
+     (flipall [(17,76)]),
+     (flipall [(1,1), (2,4), (3,9)])
+   ]
+
+test4 = 
+  let tree = Node 1 [(Node 11 []),
+                     (Node 12 [(Node 121 [])]),
+                     (Node 13 [(Node 131 []), (Node 132 [])])
+                    ]
+    in 
+      [ (size tree),
+        (size (Node 0 [tree, tree])),
+        (size (Node 0 [tree, (Node 01 [tree]), (Node 02 [tree])])) 
+      ]
+
+test5a =
+  [
+      (combinedLengths []),
+      (combinedLengths [[1]]),
+      (combinedLengths [[1], [2, 3], []]),
+      (combinedLengths [[1], [2, 3], [4,5,6]]),
+      (combinedLengths [[1], [2, 3], [4,5,6], [1], [2, 3], [4,5,6]])
+  ]
+    
+test5b =
+  [
+      (combinedLengths2 []),
+      (combinedLengths2 [[1]]),
+      (combinedLengths2 [[1], [2, 3], []]),
+      (combinedLengths2 [[1], [2, 3], [4,5,6]]),
+      (combinedLengths2 [[1], [2, 3], [4,5,6], [1], [2, 3], [4,5,6]])
+  ]
+    
+test6a = 
+   [  (stripAnyCapitals ""),
+      (stripAnyCapitals "hello"),
+      (stripAnyCapitals "HELLO"),
+      (stripAnyCapitals "HELLO!"),
+      (stripAnyCapitals "CS 152"),
+      (stripAnyCapitals "Computer Science")
+   ]
+
+test6b = 
+   [  (stripCapitals ""),
+      (stripCapitals "hello"),
+      (stripCapitals "HELLO"),
+      (stripCapitals "HELLO!"),
+      (stripCapitals "CS 152"),
+      (stripCapitals "Computer Science")
+   ]
+
+test6c = 
+   [  (isLegalIdentifier "ABC3"),
+      (isLegalIdentifier "ABC34"),
+      (isLegalIdentifier "ABC3qr"),
+      (isLegalIdentifier "ABC"),
+      (isLegalIdentifier "NeedMoreCases!!??")
+   ]
+
+test7 = 
+  [
+      (stripMatchingCharacters isUpper "ABC3qr"),
+      (stripMatchingCharacters isLower "ABC3qr"),
+      (stripMatchingCharacters isSpace " ABC3qr"),
+      ((stripMatchingCharacters isSpace) "ABC3qr"),
+      (stripMatchingCharacters (\ x -> x >= 'A' && x < 'C') "ABC3qr")
+  ]
+
+test8a =
+  [
+     ((Point 3 0) == (Point 0 (-4))),
+     ((Point 1 2) == (Point (-3) 2)),
+     ((Point 1.2 3.4) == (Point 1.2 3.4)),
+     ((Point 3 0) /= (Point 0 (-4))),
+     ((Point 1 2) /= (Point (-3) 2)),
+     ((Point 1.2 3.4) /= (Point 1.2 3.4))
+  ]
+
+test8b = 
+  [
+     (distance (Point 3 0) (Point 0 (-4))),
+     (distance (Point 1 2) (Point (-3) 2)),
+     (distance (Point 1.2 3.4) (Point 1.2 3.4)),
+     (distance (Point 10 20) (Point 20 30))
+  ]
+
+test9 = 
+  [
+     (applyAll [tail, tail, tail, tail] [1,2,3,4,5]),
+     (applyAll [init, init, init, init] [1,2,3,4,5]),
+     (applyAll [(6 :), (7 :), (8 :)] [1,2,3,4,5]),
+     (applyAll [reverse, reverse, reverse] [1,2,3,4,5]),
+     (applyAll [(map (* 2)), (map (+ 1))] [1,2,3,4,5]),
+     (applyAll [(\x -> [maximum x, minimum x])] [1,2,3,4,5]),
+     (applyAll [] [1,2,3,4,5])
+  ]
+
+test10 = 
+  [
+     (removeFirstOccurrence 4 [1,4,2,3,4,4]),
+     (removeFirstOccurrence 2 [1,4,2,3,4,4]),
+     (removeFirstOccurrence 2 [2,3,4,4]),
+     (removeFirstOccurrence 2 [3,4,4,2]),
+     (removeFirstOccurrence 12 [2,3,4,4])
+  ]
+
+
+main = do 
+  putStrLn "test1a"
+  putStrLn (show test1a)
+  putStrLn ""
+  putStrLn "test1b"
+  putStrLn (show test1b)
+  putStrLn ""
+  putStrLn "test1c"
+  putStrLn (show test1c)
+  putStrLn ""
+  putStrLn "test2"
+  putStrLn (show test2)
+  putStrLn ""
+  putStrLn "test3"
+  putStrLn (show test3)
+  putStrLn ""
+  putStrLn "test4"
+  putStrLn (show test4)
+  putStrLn ""
+  putStrLn "test5a"
+  putStrLn (show test5a)
+  putStrLn ""
+  putStrLn "test5b"
+  putStrLn (show test5b)
+  putStrLn ""
+  putStrLn "test6a"
+  putStrLn (show test6a)
+  putStrLn ""
+  putStrLn "test6b"
+  putStrLn (show test6b)
+  putStrLn ""
+  putStrLn "test6c"
+  putStrLn (show test6c)
+  putStrLn ""
+  putStrLn "test7"
+  putStrLn (show test7)
+  putStrLn ""
+  putStrLn "show a Point"
+  putStrLn (show (Point (-4) 5.5))
+  putStrLn ""
+  putStrLn "test8a"
+  putStrLn (show test8a)
+  putStrLn ""
+  putStrLn "test8b"
+  putStrLn (show test8b)
+  putStrLn ""
+  putStrLn "test9"
+  putStrLn (show test9)
+  putStrLn ""
+  putStrLn "test10"
+  putStrLn (show test10)
+  putStrLn ""
